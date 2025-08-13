@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timsort: O Algoritmo de Ordenação Inteligente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a192f;
+            color: #ccd6f6;
+        }
+        .highlight {
+            color: #64ffda;
+        }
+        .section-title {
+            font-weight: 900;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #64ffda, #8892b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background-color: #112240;
+            border: 1px solid #233554;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -15px rgba(2,12,27,0.7);
+        }
+        .array-element {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            margin: 4px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.5s ease;
+            background-color: #233554;
+            color: #ccd6f6;
+        }
+        .run-a { background-color: #e67e22; color: #0a192f; }
+        .run-b { background-color: #3498db; color: #0a192f; }
+        .run-c { background-color: #9b59b6; color: #0a192f; }
+        .run-sorted { background-color: #64ffda; color: #0a192f; }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Seção 1: Título -->
+    <header class="min-h-screen flex flex-col justify-center items-center text-center p-4">
+        <h1 class="text-5xl md:text-7xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-blue-400 to-purple-500">
+            Timsort
+        </h1>
+        <p class="text-xl md:text-2xl font-semibold text-slate-300">O Algoritmo de Ordenação Inteligente</p>
+        <p class="text-lg md:text-xl text-slate-400 mt-2">Entenda como Python e Java ordenam seus dados!</p>
+        <div class="mt-12 text-slate-400 animate-bounce">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-16 space-y-24">
+
+        <!-- Seção 2: O Que é o Timsort? -->
+        <section id="intro" class="fade-in">
+            <h2 class="section-title">O Que é o Timsort? Uma Ideia Híbrida</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg text-slate-400 mb-12">
+                Criado por Tim Peters, o Timsort reconhece que dados do mundo real raramente são aleatórios. Ele combina a velocidade do <span class="highlight">Insertion Sort</span> para pequenas listas com a eficiência do <span class="highlight">Merge Sort</span> para listas grandes.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 text-center">
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4 highlight">Insertion Sort</h3>
+                    <p class="text-slate-400 mb-4">Super rápido para ordenar sequências pequenas ou quase ordenadas.</p>
+                    <div id="insertion-sort-demo" class="flex justify-center items-center h-24"></div>
+                </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4 highlight">Merge Sort</h3>
+                    <p class="text-slate-400 mb-4">Excelente para dividir um grande problema em partes menores e juntá-las eficientemente.</p>
+                    <div id="merge-sort-demo" class="flex justify-center items-center h-24"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Passo 1 - Criando os "Runs" -->
+        <section id="runs" class="fade-in">
+            <h2 class="section-title">Passo 1: Encontrando os "Runs"</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg text-slate-400 mb-12">
+                O primeiro passo é dividir a lista em pequenas partes já ordenadas, chamadas de "runs". O Timsort é inteligente e procura por sequências que já estão naturalmente ordenadas (crescentes ou decrescentes).
+            </p>
+            <div class="card p-6 rounded-lg">
+                <div class="flex justify-center mb-4">
+                    <button id="run-button" class="bg-green-400 text-slate-900 font-bold py-2 px-4 rounded-lg hover:bg-green-300 transition-colors">Iniciar Animação dos Runs</button>
+                </div>
+                <div id="run-finding-demo" class="flex flex-wrap justify-center p-4 bg-slate-900/50 rounded-lg min-h-[64px]"></div>
+                <p id="run-explanation" class="text-center text-slate-400 mt-4 h-6 transition-opacity duration-500"></p>
+            </div>
+        </section>
+        
+        <!-- Seção 4: Passo 2 - Mesclando os "Runs" -->
+        <section id="merging" class="fade-in">
+            <h2 class="section-title">Passo 2: Mesclando os "Runs"</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg text-slate-400 mb-12">
+                Com os runs criados, o Timsort os coloca em uma pilha e começa a mesclá-los de forma otimizada, sempre priorizando juntar runs de tamanhos parecidos para máxima eficiência.
+            </p>
+            <div class="card p-6 rounded-lg">
+                 <div class="flex justify-center mb-4">
+                    <button id="merge-button" class="bg-green-400 text-slate-900 font-bold py-2 px-4 rounded-lg hover:bg-green-300 transition-colors">Iniciar Animação da Mesclagem</button>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <h3 class="font-bold text-lg mb-2 highlight">Pilha de Runs</h3>
+                        <div id="run-stack" class="bg-slate-900/50 rounded-lg p-2 min-h-[200px] space-y-2"></div>
+                    </div>
+                    <div class="text-center md:col-span-2">
+                        <h3 class="font-bold text-lg mb-2 highlight">Área de Mesclagem</h3>
+                        <div id="merge-area" class="bg-slate-900/50 rounded-lg p-4 min-h-[200px]">
+                            <p id="merge-explanation" class="text-slate-400"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 5: Por que o Timsort é tão bom? -->
+        <section id="why" class="fade-in">
+            <h2 class="section-title">Por Que o Timsort é Tão Bom?</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card p-6 rounded-lg text-center">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 highlight">Adaptativo</h3>
+                    <p class="text-slate-400">Aproveita a ordem natural dos dados. Melhor caso: <span class="font-mono">O(n)</span>.</p>
+                </div>
+                <div class="card p-6 rounded-lg text-center">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2" /></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 highlight">Estável</h3>
+                    <p class="text-slate-400">Mantém a ordem original de elementos com chaves iguais.</p>
+                </div>
+                <div class="card p-6 rounded-lg text-center">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 highlight">Eficiente</h3>
+                    <p class="text-slate-400">Performance garantida no pior caso de <span class="font-mono">O(n log n)</span>.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Seção 6: Conclusão -->
+    <footer class="text-center p-16 bg-slate-900/50 mt-24">
+        <h3 class="text-3xl font-bold mb-4">Usado por Gigantes da Tecnologia</h3>
+        <p class="text-slate-400 mb-8">O Timsort é o algoritmo de ordenação padrão em linguagens e plataformas que você usa todos os dias.</p>
+        <div class="flex justify-center items-center space-x-8">
+            <div class="text-center">
+                 <svg class="h-16 w-16 mx-auto text-slate-400" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><path d="M113.1,64c0,27.1-22,49.1-49.1,49.1S14.9,91.1,14.9,64S36.9,14.9,64,14.9v49.1H113.1z" fill="#306998"/><path d="M64,14.9c27.1,0,49.1,22,49.1,49.1h-49.1V14.9z" fill="#ffd43b"/></svg>
+                 <p class="mt-2 font-semibold">Python</p>
+            </div>
+            <div class="text-center">
+                <svg class="h-16 w-16 mx-auto text-slate-400" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><path d="M83.9,100.3c-2.2,2.2-4.8,3.9-7.5,5.3c-3.1,1.5-6.3,2.7-9.6,3.6c-3.2,0.8-6.4,1.2-9.6,1.2c-7.3,0-13.4-1.9-18.2-5.6   c-4.8-3.7-7.2-8.9-7.2-15.6c0-4.2,0.9-7.9,2.7-11.2c1.8-3.3,4.3-6,7.5-8.1c3.2-2.1,6.8-3.7,10.9-4.8c4.1-1.1,8.3-1.7,12.7-1.7   c5.8,0,10.9,0.7,15.3,2.1c4.4,1.4,8,3.3,10.9,5.8l-7,8.6c-2-1.7-4.4-3-7.2-3.9c-2.8-0.9-6-1.4-9.6-1.4c-3.9,0-7.3,0.6-10.1,1.7   c-2.8,1.1-5,2.7-6.5,4.8c-1.5,2.1-2.3,4.6-2.3,7.5c0,4.1,1.1,7.3,3.2,9.6c2.1,2.3,5.2,3.4,9.2,3.4c2.8,0,5.4-0.4,7.8-1.1   c2.4-0.7,4.6-1.8,6.5-3.2L83.9,100.3z M88.7,39.3l-12.7,46.2h-13L49.3,39.3h13.7l5.3,25.5l5.3-25.5H88.7z" fill="#5382a1"/></svg>
+                <p class="mt-2 font-semibold">Java</p>
+            </div>
+            <div class="text-center">
+                <svg class="h-16 w-16 mx-auto text-slate-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22.2,8.4l-1.4-1.4c-0.4-0.4-1-0.4-1.4,0L18,8.4c-1.6-1-3.4-1.6-5.4-1.7V4.2h3c0.6,0,1-0.4,1-1s-0.4-1-1-1h-8   c-0.6,0-1,0.4-1,1s0.4,1,1,1h3v2.5c-2,0.1-3.8,0.7-5.4,1.7L6.8,7c-0.4-0.4-1-0.4-1.4,0L4,8.4c-0.4,0.4-0.4,1,0,1.4l1.4,1.4   c0.9,0.9,2.1,1.4,3.4,1.4h0.1c0,0,0,0,0,0c0,0,0,0,0,0h5.4c0,0,0,0,0,0c0,0,0,0,0,0h0.1c1.3,0,2.5-0.5,3.4-1.4l1.4-1.4   C22.6,9.4,22.6,8.8,22.2,8.4z M8,13.8c-0.7,0-1.2-0.5-1.2-1.2s0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2S8.7,13.8,8,13.8z M16,13.8   c-0.7,0-1.2-0.5-1.2-1.2s0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2S16.7,13.8,16,13.8z"/></svg>
+                <p class="mt-2 font-semibold">Android</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animações
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observer para animações de fade-in
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Animação Insertion Sort
+            const insertionDemo = document.getElementById('insertion-sort-demo');
+            let insertionArray = [5, 2, 8, 1, 9, 4];
+            const createElements = (arr, container) => {
+                container.innerHTML = '';
+                arr.forEach(val => {
+                    const el = document.createElement('div');
+                    el.className = 'array-element';
+                    el.textContent = val;
+                    container.appendChild(el);
+                });
+            };
+            createElements(insertionArray, insertionDemo);
+            
+            setInterval(() => {
+                insertionArray.push(insertionArray.shift());
+                createElements(insertionArray, insertionDemo);
+            }, 2000);
+
+            // Animação Merge Sort
+            const mergeDemo = document.getElementById('merge-sort-demo');
+            mergeDemo.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="array-element bg-purple-500">10</div>
+                    <div class="flex">
+                        <div class="array-element bg-purple-400">5</div>
+                        <div class="array-element bg-purple-400">15</div>
+                    </div>
+                </div>
+            `;
+            
+            // Animação de encontrar Runs
+            const runDemoContainer = document.getElementById('run-finding-demo');
+            const runExplanation = document.getElementById('run-explanation');
+            const runButton = document.getElementById('run-button');
+            const initialRunArray = [3, 5, 8, 2, 1, 0, 12, 15, 10, 9];
+            
+            const resetRunDemo = () => {
+                runExplanation.style.opacity = 0;
+                createElements(initialRunArray, runDemoContainer);
+            };
+            resetRunDemo();
+
+            runButton.addEventListener('click', () => {
+                runButton.disabled = true;
+                resetRunDemo();
+                const elements = runDemoContainer.children;
+
+                const animateRuns = async () => {
+                    // 1. Natural run crescente
+                    runExplanation.textContent = 'Encontrando um "natural run" crescente...';
+                    runExplanation.style.opacity = 1;
+                    await new Promise(r => setTimeout(r, 500));
+                    for (let i = 0; i < 3; i++) {
+                        elements[i].classList.add('run-a');
+                        await new Promise(r => setTimeout(r, 200));
+                    }
+                    
+                    // 2. Run decrescente
+                    await new Promise(r => setTimeout(r, 1500));
+                    runExplanation.textContent = 'Encontrando um run decrescente e invertendo...';
+                    for (let i = 3; i < 6; i++) {
+                        elements[i].classList.add('run-b');
+                        await new Promise(r => setTimeout(r, 200));
+                    }
+                    await new Promise(r => setTimeout(r, 1000));
+                    elements[3].textContent = '0';
+                    elements[4].textContent = '1';
+                    elements[5].textContent = '2';
+                    
+                    // 3. Insertion sort run
+                    await new Promise(r => setTimeout(r, 1500));
+                    runExplanation.textContent = 'Criando um run com Insertion Sort...';
+                    for (let i = 6; i < 10; i++) {
+                        elements[i].classList.add('run-c');
+                        await new Promise(r => setTimeout(r, 200));
+                    }
+                    await new Promise(r => setTimeout(r, 1000));
+                    elements[6].textContent = '9';
+                    elements[7].textContent = '10';
+                    elements[8].textContent = '12';
+                    elements[9].textContent = '15';
+
+                    await new Promise(r => setTimeout(r, 1500));
+                    runExplanation.textContent = 'Todos os runs foram encontrados!';
+                    runButton.disabled = false;
+                };
+                animateRuns();
+            });
+
+            // Animação de mesclagem
+            const mergeButton = document.getElementById('merge-button');
+            const stackContainer = document.getElementById('run-stack');
+            const mergeArea = document.getElementById('merge-area');
+            const mergeExplanation = document.getElementById('merge-explanation');
+
+            const createRunElement = (run, className) => {
+                const container = document.createElement('div');
+                container.className = `p-2 rounded-md ${className} flex flex-wrap justify-center`;
+                run.forEach(val => {
+                    const el = document.createElement('div');
+                    el.className = 'array-element';
+                    el.textContent = val;
+                    container.appendChild(el);
+                });
+                return container;
+            };
+
+            const resetMergeDemo = () => {
+                stackContainer.innerHTML = '';
+                mergeArea.innerHTML = '';
+                mergeExplanation.textContent = 'Clique para iniciar a mesclagem dos runs.';
+            };
+            resetMergeDemo();
+
+            mergeButton.addEventListener('click', () => {
+                mergeButton.disabled = true;
+                resetMergeDemo();
+
+                const runs = [
+                    { data: [9, 10, 12, 15], class: 'run-c' },
+                    { data: [0, 1, 2], class: 'run-b' },
+                    { data: [3, 5, 8], class: 'run-a' },
+                ];
+
+                const animateMerge = async () => {
+                    mergeExplanation.textContent = 'Adicionando runs à pilha...';
+                    for(const run of runs.slice().reverse()) {
+                        const runEl = createRunElement(run.data, run.class);
+                        runEl.style.opacity = 0;
+                        stackContainer.prepend(runEl);
+                        await new Promise(r => setTimeout(r, 100));
+                        runEl.style.transition = 'opacity 0.5s';
+                        runEl.style.opacity = 1;
+                        await new Promise(r => setTimeout(r, 500));
+                    }
+
+                    // Merge 1
+                    await new Promise(r => setTimeout(r, 1000));
+                    mergeExplanation.textContent = 'Mesclando os dois runs do topo da pilha...';
+                    const run1El = stackContainer.children[0];
+                    const run2El = stackContainer.children[1];
+                    run1El.style.opacity = 0;
+                    run2El.style.opacity = 0;
+                    await new Promise(r => setTimeout(r, 500));
+                    
+                    const mergedRun1Data = [0, 1, 2, 3, 5, 8];
+                    const mergedRun1El = createRunElement(mergedRun1Data, 'run-sorted');
+                    mergeArea.appendChild(mergedRun1El);
+                    
+                    await new Promise(r => setTimeout(r, 1000));
+                    mergeExplanation.textContent = 'Colocando o novo run mesclado de volta na pilha.';
+                    stackContainer.removeChild(run1El);
+                    stackContainer.removeChild(run2El);
+                    mergeArea.innerHTML = '';
+                    mergedRun1El.style.opacity = 0;
+                    stackContainer.prepend(mergedRun1El);
+                    await new Promise(r => setTimeout(r, 100));
+                    mergedRun1El.style.transition = 'opacity 0.5s';
+                    mergedRun1El.style.opacity = 1;
+
+                    // Merge 2
+                    await new Promise(r => setTimeout(r, 1500));
+                    mergeExplanation.textContent = 'Mesclando os runs restantes...';
+                    const finalRun1El = stackContainer.children[0];
+                    const finalRun2El = stackContainer.children[1];
+                    finalRun1El.style.opacity = 0;
+                    finalRun2El.style.opacity = 0;
+                    await new Promise(r => setTimeout(r, 500));
+                    
+                    const finalMergedData = [0, 1, 2, 3, 5, 8, 9, 10, 12, 15];
+                    const finalMergedEl = createRunElement(finalMergedData, 'run-sorted');
+                    mergeArea.appendChild(finalMergedEl);
+
+                    await new Promise(r => setTimeout(r, 1000));
+                    mergeExplanation.textContent = 'Processo concluído! A lista está ordenada.';
+                    stackContainer.innerHTML = '';
+                    mergeButton.disabled = false;
+                };
+
+                animateMerge();
+            });
+        });
+    </script>
+</body>
+</html>
